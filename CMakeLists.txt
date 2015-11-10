@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 2.6)
 
 project(glucose)
 
@@ -15,11 +15,13 @@ set(main_simp "simp/Main.cc")
 set(main_parallel "parallel/Main.cc")
 
 # Basic Library
-file(GLOB lib_srcs RELATIVE ${CMAKE_SOURCE_DIR}  mtl/*.cc core/*.cc simp/*.cc utils/*.cc)
+file(GLOB lib_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} mtl/*.cc core/*.cc simp/*.cc utils/*.cc)
 list(REMOVE_ITEM lib_srcs ${main_simp} ${main_parallel})
 
+message(${lib_srcs})
+
 # Parallel Library
-file(GLOB lib_parallel_srcs RELATIVE ${CMAKE_SOURCE_DIR} parallel/*.cc)
+file(GLOB lib_parallel_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} parallel/*.cc)
 list(REMOVE_ITEM lib_parallel_srcs ${main_simp} ${main_parallel})
 
 
@@ -30,9 +32,8 @@ else()
 endif()
 
 
-
 include_directories(
-  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   ${ZLIB_INCLUDE_DIR})
 
 link_libraries(${ZLIB_LIBRARY})
@@ -44,12 +45,6 @@ add_executable(glucose-simp ${main_simp})
 target_link_libraries(glucose-simp glucose)
 
 # PARALLEL STUFF:
-
-#build a library for parallel usage
-FOREACH(a in ${lib_srcs} ${lib_parallel_srcs})
-  message(${a})
-ENDFOREACH()
-
 add_library(glucosep ${lib_type} ${lib_srcs} ${lib_parallel_srcs})
 add_executable(glucose-syrup ${main_parallel})
 target_link_libraries(glucose-syrup glucosep ${CMAKE_THREAD_LIBS_INIT})
